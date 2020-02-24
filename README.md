@@ -1,2 +1,2 @@
 # alexa_skill
-experimental scala endpoint for my alexa skill
+Experimenting with a scala endpoint for my alexa skill.
