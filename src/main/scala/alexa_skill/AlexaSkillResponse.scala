@@ -1,4 +1,4 @@
-package alexa_skill_json
+package alexa_skill
 
 case class AlexaSkillResponse
 (version: String
@@ -24,3 +24,15 @@ case class AlexaSkillCard
   , title: String
   , content: String
 )
+
+object AlexaSkillResponse {
+  def createSimple(speechText: String, card: String): AlexaSkillResponse = {
+    AlexaSkillResponse(
+      version="1.0",
+      sessionAttributes = Map.empty[String, String],
+      response=AlexaSkillResponseResponse(
+        outputSpeech=AlexaSkillOutputSpeech("PlainText", speechText),
+        card=AlexaSkillCard("Simple", card, speechText),
+        shouldEndSession=true))
+  }
+}
