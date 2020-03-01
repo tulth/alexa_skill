@@ -1,8 +1,4 @@
-package alexa_skill_json
-// import io.circe.{ Decoder, Encoder }
-// import io.circe.generic.semiauto.{ deriveDecoder, deriveEncoder}
-// import io.circe.{ Decoder, Encoder }, io.circe.generic.auto._
-// import io.circe.syntax._
+package alexa_skill
 import cats.syntax.functor._
 import io.circe.{ Decoder, Encoder }, io.circe.generic.auto._
 import io.circe.syntax._
@@ -14,6 +10,9 @@ case class AlexaSkillRequest
   , request: AlexaSkillRequestRequest
 )
 
+object AlexaSkillRequest {
+
+}
 
 case class AlexaSkillSession
 (`new`: Boolean
@@ -70,8 +69,8 @@ object AlexaSkillRequestRequest {
 
   implicit val decodeAlexaSkillRequestRequest: Decoder[AlexaSkillRequestRequest] =
     List[Decoder[AlexaSkillRequestRequest]](
-      Decoder[AlexaSkillIntentRequest].widen,
-      Decoder[AlexaSkillSessionEndedRequest].widen
+      Decoder[AlexaSkillIntentRequest].widen
+        , Decoder[AlexaSkillSessionEndedRequest].widen
     ).reduceLeft(_ or _)
 }
 
@@ -114,11 +113,26 @@ case class AlexaSkillSlot
 
 case class AlexaSkillResolution(resolutionsPerAuthority: List[AlexaSkillResolutionPerAuthority])
 
-case class AlexaSkillResolutionPerAuthority
+sealed trait AlexaSkillResolutionPerAuthority
+case class AlexaSkillResolutionPerAuthorityNoValues
+(authority: String
+  , status: AlexaSkillResolutionStatus
+) extends AlexaSkillResolutionPerAuthority
+
+case class AlexaSkillResolutionPerAuthorityHasValues
 (authority: String
   , status: AlexaSkillResolutionStatus
   , values: List[AlexaSkillResolutionValue]
-)
+) extends AlexaSkillResolutionPerAuthority
+
+object AlexaSkillResolutionPerAuthority {
+    implicit val decodeAlexaSkillResolutionPerAuthority: Decoder[AlexaSkillResolutionPerAuthority] =
+    List[Decoder[AlexaSkillResolutionPerAuthority]](
+      Decoder[AlexaSkillResolutionPerAuthorityHasValues].widen
+        , Decoder[AlexaSkillResolutionPerAuthorityNoValues].widen
+    ).reduceLeft(_ or _)
+
+}
 
 case class AlexaSkillResolutionStatus(code: String)
 
